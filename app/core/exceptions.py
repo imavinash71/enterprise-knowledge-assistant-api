@@ -67,3 +67,14 @@ class ConflictError(AppException):
 
     status_code = 409
     error_code = "conflict"
+
+
+class UnprocessableEntityError(AppException):
+    """Raised when a well-formed request cannot be processed.
+
+    Used, for example, when a document's text cannot be extracted or its type
+    is not supported by any registered extraction strategy.
+    """
+
+    status_code = 422
+    error_code = "unprocessable_entity"
