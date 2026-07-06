@@ -133,3 +133,11 @@ class StorageService:
             target.unlink(missing_ok=True)
         except OSError as exc:  # pragma: no cover - filesystem failure
             logger.warning("Could not delete file %s: %s", target, exc)
+
+    def read(self, relative_path: str) -> bytes:
+        """Return the raw bytes of a stored file.
+
+        Raises:
+            FileNotFoundError: If the file does not exist on disk.
+        """
+        return (self._base_dir / relative_path).read_bytes()

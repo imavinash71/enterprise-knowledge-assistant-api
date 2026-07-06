@@ -85,6 +85,21 @@ class Settings(BaseSettings):
     # Defaults to 1536 to match OpenAI ``text-embedding-3-small``.
     EMBEDDING_DIM: int = 1536
 
+    # Embedding provider: "openai", "gemini", or "fake". The "fake" provider
+    # generates deterministic local vectors so the pipeline works end-to-end
+    # without any external API key (useful for development and testing).
+    EMBEDDING_PROVIDER: str = "fake"
+    EMBEDDING_MODEL: str = "text-embedding-3-small"
+    OPENAI_API_KEY: str | None = None
+    GEMINI_API_KEY: str | None = None
+
+    # ------------------------------------------------------------------ #
+    # RAG / chunking / retrieval
+    # ------------------------------------------------------------------ #
+    CHUNK_SIZE: int = 1000
+    CHUNK_OVERLAP: int = 200
+    RAG_TOP_K: int = 5
+
     # ------------------------------------------------------------------ #
     # File uploads
     # ------------------------------------------------------------------ #

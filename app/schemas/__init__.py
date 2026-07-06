@@ -28,6 +28,11 @@ from app.schemas.document import (
     DocumentRead,
 )
 from app.schemas.message import MessageBase, MessageCreate, MessageRead
+from app.schemas.rag import (
+    IngestResponse,
+    SearchRequest,
+    SearchResponse,
+)
 from app.schemas.user import UserBase, UserCreate, UserRead, UserUpdate
 
 __all__ = [
@@ -63,6 +68,10 @@ __all__ = [
     "MessageBase",
     "MessageCreate",
     "MessageRead",
+    # rag
+    "IngestResponse",
+    "SearchRequest",
+    "SearchResponse",
     # user
     "UserBase",
     "UserCreate",

@@ -18,10 +18,16 @@ from app.core.security import JWTError, TokenType, decode_token
 from app.database.session import get_db
 from app.models.enums import UserRole
 from app.models.user import User
+from app.rag.chunking import TextChunker
+from app.rag.embeddings import EmbeddingProvider, get_embedding_provider
+from app.rag.extraction.service import DocumentProcessingService
+from app.repositories.chunk_repository import ChunkRepository
 from app.repositories.document_repository import DocumentRepository
 from app.repositories.user_repository import UserRepository
 from app.services.auth_service import AuthService
 from app.services.document_service import DocumentService
+from app.services.ingestion_service import IngestionService
+from app.services.retrieval_service import RetrievalService
 from app.services.storage_service import StorageService
 
 # ``tokenUrl`` powers the Swagger "Authorize" button; it points at the login
@@ -66,6 +72,60 @@ def get_document_service(
 ) -> DocumentService:
     """Provide a :class:`DocumentService` with its dependencies injected."""
     return DocumentService(document_repository, storage_service)
+
+
+# --------------------------------------------------------------------------- #
+# RAG providers
+# --------------------------------------------------------------------------- #
+def get_chunk_repository(db: DbSession) -> ChunkRepository:
+    """Provide a :class:`ChunkRepository` bound to the request session."""
+    return ChunkRepository(db)
+
+
+def get_embedding_provider_dep() -> EmbeddingProvider:
+    """Provide the configured embedding provider (cached singleton)."""
+    return get_embedding_provider()
+
+
+def get_processing_service() -> DocumentProcessingService:
+    """Provide a :class:`DocumentProcessingService`."""
+    return DocumentProcessingService()
+
+
+def get_text_chunker() -> TextChunker:
+    """Provide a :class:`TextChunker` using configured chunk size/overlap."""
+    return TextChunker()
+
+
+def get_ingestion_service(
+    chunk_repository: Annotated[ChunkRepository, Depends(get_chunk_repository)],
+    storage_service: Annotated[StorageService, Depends(get_storage_service)],
+    processing_service: Annotated[
+        DocumentProcessingService, Depends(get_processing_service)
+    ],
+    chunker: Annotated[TextChunker, Depends(get_text_chunker)],
+    embedding_provider: Annotated[
+        EmbeddingProvider, Depends(get_embedding_provider_dep)
+    ],
+) -> IngestionService:
+    """Provide an :class:`IngestionService` with its dependencies injected."""
+    return IngestionService(
+        chunk_repository,
+        storage_service,
+        processing_service,
+        chunker,
+        embedding_provider,
+    )
+
+
+def get_retrieval_service(
+    chunk_repository: Annotated[ChunkRepository, Depends(get_chunk_repository)],
+    embedding_provider: Annotated[
+        EmbeddingProvider, Depends(get_embedding_provider_dep)
+    ],
+) -> RetrievalService:
+    """Provide a :class:`RetrievalService` with its dependencies injected."""
+    return RetrievalService(chunk_repository, embedding_provider)
 
 
 # --------------------------------------------------------------------------- #
@@ -128,6 +188,12 @@ __all__ = [
     "get_document_repository",
     "get_storage_service",
     "get_document_service",
+    "get_chunk_repository",
+    "get_embedding_provider_dep",
+    "get_processing_service",
+    "get_text_chunker",
+    "get_ingestion_service",
+    "get_retrieval_service",
     "get_current_user",
     "require_role",
 ]
