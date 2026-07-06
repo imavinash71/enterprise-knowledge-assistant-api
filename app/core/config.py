@@ -6,9 +6,8 @@ file using :mod:`pydantic-settings`.
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import List
 
-from pydantic import Field, PostgresDsn, field_validator
+from pydantic import PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -45,15 +44,18 @@ class Settings(BaseSettings):
     # ------------------------------------------------------------------ #
     # CORS
     # ------------------------------------------------------------------ #
-    BACKEND_CORS_ORIGINS: List[str] = Field(default_factory=list)
+    # Stored as a raw comma-separated string to avoid pydantic-settings
+    # attempting to JSON-decode a list-typed env var. Use ``cors_origins`` to
+    # obtain the parsed list.
+    BACKEND_CORS_ORIGINS: str = ""
 
-    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
-    @classmethod
-    def _assemble_cors_origins(cls, value: object) -> object:
-        """Allow CORS origins to be provided as a comma-separated string."""
-        if isinstance(value, str) and not value.startswith("["):
-            return [origin.strip() for origin in value.split(",") if origin.strip()]
-        return value
+    @property
+    def cors_origins(self) -> list[str]:
+        """Return CORS origins parsed from the comma-separated setting."""
+        raw = self.BACKEND_CORS_ORIGINS.strip()
+        if not raw:
+            return []
+        return [origin.strip() for origin in raw.split(",") if origin.strip()]
 
     # ------------------------------------------------------------------ #
     # Database
@@ -66,6 +68,13 @@ class Settings(BaseSettings):
 
     # Optional full override.
     DATABASE_URL: str | None = None
+
+    # ------------------------------------------------------------------ #
+    # Vector store / embeddings
+    # ------------------------------------------------------------------ #
+    # Dimension of the embedding vectors stored in the ``chunks`` table.
+    # Defaults to 1536 to match OpenAI ``text-embedding-3-small``.
+    EMBEDDING_DIM: int = 1536
 
     @property
     def sqlalchemy_database_uri(self) -> str:
