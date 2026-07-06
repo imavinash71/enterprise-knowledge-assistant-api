@@ -21,9 +21,11 @@ from app.models.user import User
 from app.rag.chunking import TextChunker
 from app.rag.embeddings import EmbeddingProvider, get_embedding_provider
 from app.rag.extraction.service import DocumentProcessingService
+from app.rag.llm import LLMProvider, get_llm_provider
 from app.repositories.chunk_repository import ChunkRepository
 from app.repositories.document_repository import DocumentRepository
 from app.repositories.user_repository import UserRepository
+from app.services.agent_service import AgentService
 from app.services.auth_service import AuthService
 from app.services.document_service import DocumentService
 from app.services.ingestion_service import IngestionService
@@ -128,6 +130,21 @@ def get_retrieval_service(
     return RetrievalService(chunk_repository, embedding_provider)
 
 
+def get_llm_provider_dep() -> LLMProvider:
+    """Provide the configured LLM provider (cached singleton)."""
+    return get_llm_provider()
+
+
+def get_agent_service(
+    retrieval_service: Annotated[
+        RetrievalService, Depends(get_retrieval_service)
+    ],
+    llm_provider: Annotated[LLMProvider, Depends(get_llm_provider_dep)],
+) -> AgentService:
+    """Provide an :class:`AgentService` with its dependencies injected."""
+    return AgentService(retrieval_service, llm_provider)
+
+
 # --------------------------------------------------------------------------- #
 # Current user resolution
 # --------------------------------------------------------------------------- #
@@ -194,6 +211,8 @@ __all__ = [
     "get_text_chunker",
     "get_ingestion_service",
     "get_retrieval_service",
+    "get_llm_provider_dep",
+    "get_agent_service",
     "get_current_user",
     "require_role",
 ]

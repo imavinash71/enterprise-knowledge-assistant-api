@@ -1,4 +1,5 @@
 """Pydantic schemas package."""
+from app.schemas.agent import AskRequest, AskResponse, CitationOut
 from app.schemas.auth import (
     AuthResponse,
     LoginRequest,
@@ -36,6 +37,10 @@ from app.schemas.rag import (
 from app.schemas.user import UserBase, UserCreate, UserRead, UserUpdate
 
 __all__ = [
+    # agent
+    "AskRequest",
+    "AskResponse",
+    "CitationOut",
     # auth
     "AuthResponse",
     "LoginRequest",

@@ -34,3 +34,7 @@ numpy==2.1.3
 # Embedding provider SDKs (lazily imported; only needed for their provider).
 openai==1.57.0
 google-generativeai==0.8.3
+
+# --- Agents / LangGraph ---
+langgraph==0.2.53
+langchain-core==0.3.21

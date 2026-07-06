@@ -94,6 +94,16 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str | None = None
 
     # ------------------------------------------------------------------ #
+    # LLM (answer generation / agents)
+    # ------------------------------------------------------------------ #
+    # LLM provider: "openai", "gemini", or "fake". The "fake" provider returns
+    # deterministic, citation-aware text so the LangGraph workflow runs without
+    # any external API key.
+    LLM_PROVIDER: str = "fake"
+    LLM_MODEL: str = "gpt-4o-mini"
+    LLM_TEMPERATURE: float = 0.0
+
+    # ------------------------------------------------------------------ #
     # RAG / chunking / retrieval
     # ------------------------------------------------------------------ #
     CHUNK_SIZE: int = 1000
