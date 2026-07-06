@@ -21,7 +21,12 @@ from app.schemas.chunk import (
     ChunkSearchResult,
 )
 from app.schemas.common import ErrorDetail, ErrorResponse, Message, ORMModel
-from app.schemas.document import DocumentBase, DocumentCreate, DocumentRead
+from app.schemas.document import (
+    DocumentBase,
+    DocumentCreate,
+    DocumentList,
+    DocumentRead,
+)
 from app.schemas.message import MessageBase, MessageCreate, MessageRead
 from app.schemas.user import UserBase, UserCreate, UserRead, UserUpdate
 
@@ -52,6 +57,7 @@ __all__ = [
     # document
     "DocumentBase",
     "DocumentCreate",
+    "DocumentList",
     "DocumentRead",
     # message
     "MessageBase",

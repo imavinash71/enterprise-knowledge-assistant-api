@@ -85,6 +85,25 @@ class Settings(BaseSettings):
     # Defaults to 1536 to match OpenAI ``text-embedding-3-small``.
     EMBEDDING_DIM: int = 1536
 
+    # ------------------------------------------------------------------ #
+    # File uploads
+    # ------------------------------------------------------------------ #
+    # Directory (relative to the project root or absolute) where uploaded
+    # files are stored.
+    UPLOAD_DIR: str = "uploads"
+    # Maximum accepted upload size, in megabytes.
+    MAX_UPLOAD_SIZE_MB: int = 25
+
+    @property
+    def max_upload_size_bytes(self) -> int:
+        """Return the maximum upload size in bytes."""
+        return self.MAX_UPLOAD_SIZE_MB * 1024 * 1024
+
+    @property
+    def allowed_upload_extensions(self) -> frozenset[str]:
+        """Return the set of permitted (lower-cased) file extensions."""
+        return frozenset({".pdf", ".docx", ".txt", ".pptx"})
+
     @property
     def sqlalchemy_database_uri(self) -> str:
         """Return the SQLAlchemy connection string."""

@@ -18,8 +18,11 @@ from app.core.security import JWTError, TokenType, decode_token
 from app.database.session import get_db
 from app.models.enums import UserRole
 from app.models.user import User
+from app.repositories.document_repository import DocumentRepository
 from app.repositories.user_repository import UserRepository
 from app.services.auth_service import AuthService
+from app.services.document_service import DocumentService
+from app.services.storage_service import StorageService
 
 # ``tokenUrl`` powers the Swagger "Authorize" button; it points at the login
 # endpoint that returns a bearer token.
@@ -43,6 +46,26 @@ def get_auth_service(
 ) -> AuthService:
     """Provide an :class:`AuthService` with its dependencies injected."""
     return AuthService(user_repository)
+
+
+def get_document_repository(db: DbSession) -> DocumentRepository:
+    """Provide a :class:`DocumentRepository` bound to the request session."""
+    return DocumentRepository(db)
+
+
+def get_storage_service() -> StorageService:
+    """Provide a :class:`StorageService`."""
+    return StorageService()
+
+
+def get_document_service(
+    document_repository: Annotated[
+        DocumentRepository, Depends(get_document_repository)
+    ],
+    storage_service: Annotated[StorageService, Depends(get_storage_service)],
+) -> DocumentService:
+    """Provide a :class:`DocumentService` with its dependencies injected."""
+    return DocumentService(document_repository, storage_service)
 
 
 # --------------------------------------------------------------------------- #
@@ -102,6 +125,9 @@ __all__ = [
     "get_db",
     "get_user_repository",
     "get_auth_service",
+    "get_document_repository",
+    "get_storage_service",
+    "get_document_service",
     "get_current_user",
     "require_role",
 ]
