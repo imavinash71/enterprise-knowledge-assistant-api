@@ -70,6 +70,15 @@ class Settings(BaseSettings):
     DATABASE_URL: str | None = None
 
     # ------------------------------------------------------------------ #
+    # Authentication / JWT
+    # ------------------------------------------------------------------ #
+    # SECRET_KEY must be overridden in every non-development environment.
+    SECRET_KEY: str = "CHANGE_ME_IN_PRODUCTION"
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+
+    # ------------------------------------------------------------------ #
     # Vector store / embeddings
     # ------------------------------------------------------------------ #
     # Dimension of the embedding vectors stored in the ``chunks`` table.

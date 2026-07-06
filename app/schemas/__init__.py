@@ -1,4 +1,12 @@
 """Pydantic schemas package."""
+from app.schemas.auth import (
+    AuthResponse,
+    LoginRequest,
+    RefreshRequest,
+    RegisterRequest,
+    TokenPayload,
+    TokenResponse,
+)
 from app.schemas.chat import (
     ChatBase,
     ChatCreate,
@@ -18,6 +26,13 @@ from app.schemas.message import MessageBase, MessageCreate, MessageRead
 from app.schemas.user import UserBase, UserCreate, UserRead, UserUpdate
 
 __all__ = [
+    # auth
+    "AuthResponse",
+    "LoginRequest",
+    "RefreshRequest",
+    "RegisterRequest",
+    "TokenPayload",
+    "TokenResponse",
     # chat
     "ChatBase",
     "ChatCreate",

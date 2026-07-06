@@ -13,6 +13,7 @@ from app.api.v1.router import api_router
 from app.core.config import settings
 from app.core.exception_handlers import register_exception_handlers
 from app.core.logging import configure_logging, get_logger
+from app.core.middleware import AuthContextMiddleware
 
 configure_logging()
 logger = get_logger(__name__)
@@ -47,6 +48,9 @@ def create_app() -> FastAPI:
             allow_methods=["*"],
             allow_headers=["*"],
         )
+
+    # Attach lightweight auth context to each request (non-enforcing).
+    app.add_middleware(AuthContextMiddleware)
 
     # Global exception handlers
     register_exception_handlers(app)

@@ -16,3 +16,9 @@ pgvector==0.3.6
 
 # --- Utils ---
 python-multipart==0.0.17
+
+# --- Authentication ---
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+# Pinned <4.1: passlib 1.7.4 reads bcrypt.__about__, removed in bcrypt 4.1+.
+bcrypt==4.0.1
