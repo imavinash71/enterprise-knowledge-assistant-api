@@ -22,11 +22,14 @@ from app.rag.chunking import TextChunker
 from app.rag.embeddings import EmbeddingProvider, get_embedding_provider
 from app.rag.extraction.service import DocumentProcessingService
 from app.rag.llm import LLMProvider, get_llm_provider
+from app.repositories.chat_repository import ChatRepository
 from app.repositories.chunk_repository import ChunkRepository
 from app.repositories.document_repository import DocumentRepository
+from app.repositories.message_repository import MessageRepository
 from app.repositories.user_repository import UserRepository
 from app.services.agent_service import AgentService
 from app.services.auth_service import AuthService
+from app.services.chat_service import ChatService
 from app.services.document_service import DocumentService
 from app.services.ingestion_service import IngestionService
 from app.services.retrieval_service import RetrievalService
@@ -145,6 +148,27 @@ def get_agent_service(
     return AgentService(retrieval_service, llm_provider)
 
 
+def get_chat_repository(db: DbSession) -> ChatRepository:
+    """Provide a :class:`ChatRepository` bound to the request session."""
+    return ChatRepository(db)
+
+
+def get_message_repository(db: DbSession) -> MessageRepository:
+    """Provide a :class:`MessageRepository` bound to the request session."""
+    return MessageRepository(db)
+
+
+def get_chat_service(
+    chat_repository: Annotated[ChatRepository, Depends(get_chat_repository)],
+    message_repository: Annotated[
+        MessageRepository, Depends(get_message_repository)
+    ],
+    agent_service: Annotated[AgentService, Depends(get_agent_service)],
+) -> ChatService:
+    """Provide a :class:`ChatService` with its dependencies injected."""
+    return ChatService(chat_repository, message_repository, agent_service)
+
+
 # --------------------------------------------------------------------------- #
 # Current user resolution
 # --------------------------------------------------------------------------- #
@@ -213,6 +237,9 @@ __all__ = [
     "get_retrieval_service",
     "get_llm_provider_dep",
     "get_agent_service",
+    "get_chat_repository",
+    "get_message_repository",
+    "get_chat_service",
     "get_current_user",
     "require_role",
 ]

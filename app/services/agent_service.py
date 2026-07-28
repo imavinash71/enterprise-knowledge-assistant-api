@@ -27,7 +27,31 @@ class AgentAnswer:
     answer: str
     verified: bool
     verification_notes: str
+    confidence: float
+    # All chunks returned by retrieval (what informed the answer).
+    sources: list[RetrievedSource] = field(default_factory=list)
+    # The verified subset actually cited inline in the answer.
     citations: list[RetrievedSource] = field(default_factory=list)
+
+
+def _confidence_score(
+    intent: str, verified: bool, citations: list[RetrievedSource]
+) -> float:
+    """Derive a 0-1 confidence score for an answer.
+
+    Social turns (greeting/chitchat) are deterministic canned replies, so they
+    score 1.0. Knowledge answers score the mean similarity of their cited
+    sources, halved when citation verification failed and 0.0 when nothing was
+    cited (i.e. the answer is ungrounded).
+    """
+    if intent != "knowledge_query":
+        return 1.0
+    if not citations:
+        return 0.0
+    mean_score = sum(c["score"] for c in citations) / len(citations)
+    if not verified:
+        mean_score *= 0.5
+    return round(max(0.0, min(1.0, mean_score)), 4)
 
 
 class AgentService:
@@ -66,11 +90,16 @@ class AgentService:
         logger.info("Running agent workflow for owner_id=%s", owner_id)
         final: AgentState = self._graph.invoke(initial)
 
+        intent = final.get("intent", "knowledge_query")
+        verified = final.get("verified", False)
+        citations = final.get("cited_sources", [])
         return AgentAnswer(
             question=question,
-            intent=final.get("intent", "knowledge_query"),
+            intent=intent,
             answer=final.get("answer", ""),
-            verified=final.get("verified", False),
+            verified=verified,
             verification_notes=final.get("verification_notes", ""),
-            citations=final.get("cited_sources", []),
+            confidence=_confidence_score(intent, verified, citations),
+            sources=final.get("sources", []),
+            citations=citations,
         )

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.schemas.agent import CitationOut
 from app.schemas.message import MessageRead
 
 
@@ -41,3 +42,39 @@ class ChatWithMessages(ChatRead):
     """Chat representation including its ordered messages."""
 
     messages: list[MessageRead] = []
+
+
+# --------------------------------------------------------------------------- #
+# Chat API request/response DTOs
+# --------------------------------------------------------------------------- #
+class ChatRequest(BaseModel):
+    """Payload for asking a question in a chat conversation."""
+
+    question: str = Field(..., min_length=1)
+    chat_id: int | None = Field(
+        default=None,
+        description="Continue an existing conversation; omit to start a new one.",
+    )
+    document_id: int | None = Field(
+        default=None, description="Restrict retrieval to a single document."
+    )
+    top_k: int | None = Field(default=None, ge=1, le=50)
+
+
+class ChatResponse(BaseModel):
+    """The assistant's answer plus its grounding and confidence."""
+
+    chat_id: int
+    question: str
+    answer: str
+    intent: str
+    confidence: float
+    verified: bool
+    sources: list[CitationOut]
+
+
+class ChatHistory(BaseModel):
+    """A user's conversations, most recent first, with their messages."""
+
+    total: int
+    items: list[ChatWithMessages]

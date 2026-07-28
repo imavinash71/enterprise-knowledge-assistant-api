@@ -11,7 +11,10 @@ from app.schemas.auth import (
 from app.schemas.chat import (
     ChatBase,
     ChatCreate,
+    ChatHistory,
     ChatRead,
+    ChatRequest,
+    ChatResponse,
     ChatUpdate,
     ChatWithMessages,
 )
@@ -51,7 +54,10 @@ __all__ = [
     # chat
     "ChatBase",
     "ChatCreate",
+    "ChatHistory",
     "ChatRead",
+    "ChatRequest",
+    "ChatResponse",
     "ChatUpdate",
     "ChatWithMessages",
     # chunk

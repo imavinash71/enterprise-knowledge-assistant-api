@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, func
+from sqlalchemy import DateTime, Float, ForeignKey, String, Text, func
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base_class import Base
@@ -29,6 +30,13 @@ class Message(Base):
     timestamp: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+    # Assistant-only answer metadata. ``sources`` holds the retrieved chunks
+    # that grounded the answer and ``confidence`` the agent's self-assessed
+    # score; both are NULL for user/system messages.
+    sources: Mapped[list[dict[str, Any]] | None] = mapped_column(
+        JSONB, nullable=True
+    )
+    confidence: Mapped[float | None] = mapped_column(Float, nullable=True)
 
     # Relationships ----------------------------------------------------- #
     chat: Mapped["Chat"] = relationship(back_populates="messages")
