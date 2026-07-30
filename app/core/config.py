@@ -85,23 +85,40 @@ class Settings(BaseSettings):
     # Defaults to 1536 to match OpenAI ``text-embedding-3-small``.
     EMBEDDING_DIM: int = 1536
 
-    # Embedding provider: "openai", "gemini", or "fake". The "fake" provider
-    # generates deterministic local vectors so the pipeline works end-to-end
-    # without any external API key (useful for development and testing).
+    # Embedding provider: "openai", "gemini", "ollama", or "fake". The "fake"
+    # provider generates deterministic local vectors so the pipeline works
+    # end-to-end without any external API key (useful for development and
+    # testing). NOTE: "fake" is non-semantic — use a real provider for
+    # meaningful retrieval quality.
     EMBEDDING_PROVIDER: str = "fake"
     EMBEDDING_MODEL: str = "text-embedding-3-small"
     OPENAI_API_KEY: str | None = None
     GEMINI_API_KEY: str | None = None
 
+    # Ollama embeddings (self-hosted / remote). Used only when
+    # EMBEDDING_PROVIDER="ollama". Reuses OLLAMA_BASE_URL / OLLAMA_TIMEOUT
+    # defined in the LLM section. ``nomic-embed-text`` returns 768-dim vectors,
+    # so set EMBEDDING_DIM=768 when using it.
+    OLLAMA_EMBEDDING_MODEL: str = "nomic-embed-text"
+
     # ------------------------------------------------------------------ #
     # LLM (answer generation / agents)
     # ------------------------------------------------------------------ #
-    # LLM provider: "openai", "gemini", or "fake". The "fake" provider returns
-    # deterministic, citation-aware text so the LangGraph workflow runs without
-    # any external API key.
+    # LLM provider: "openai", "gemini", "ollama", or "fake". The "fake" provider
+    # returns deterministic, citation-aware text so the LangGraph workflow runs
+    # without any external API key.
     LLM_PROVIDER: str = "fake"
     LLM_MODEL: str = "gpt-4o-mini"
     LLM_TEMPERATURE: float = 0.0
+
+    # Ollama (self-hosted / remote OpenAI-compatible LLM runtime). Used only
+    # when LLM_PROVIDER="ollama". Points at the host running the Ollama server;
+    # no API key is required.
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    OLLAMA_MODEL: str = "llama3.2"
+    # Per-request timeout (seconds) for the Ollama HTTP call.
+    OLLAMA_TIMEOUT: float = 120.0
+
 
     # ------------------------------------------------------------------ #
     # RAG / chunking / retrieval

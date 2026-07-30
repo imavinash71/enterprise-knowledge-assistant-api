@@ -8,12 +8,14 @@ from app.core.exceptions import AppException
 from app.rag.embeddings.base import EmbeddingProvider
 from app.rag.embeddings.fake_provider import FakeEmbeddingProvider
 from app.rag.embeddings.gemini_provider import GeminiEmbeddingProvider
+from app.rag.embeddings.ollama_provider import OllamaEmbeddingProvider
 from app.rag.embeddings.openai_provider import OpenAIEmbeddingProvider
 
 _PROVIDERS = {
     "fake": FakeEmbeddingProvider,
     "openai": OpenAIEmbeddingProvider,
     "gemini": GeminiEmbeddingProvider,
+    "ollama": OllamaEmbeddingProvider,
 }
 
 

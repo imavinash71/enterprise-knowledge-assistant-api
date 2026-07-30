@@ -66,6 +66,7 @@ class IngestionService:
         self._chunks.delete_by_document(document.id)
 
         vectors = self._embeddings.embed_documents(pieces)
+
         chunks = [
             Chunk(document_id=document.id, content=piece, embedding=vector)
             for piece, vector in zip(pieces, vectors)

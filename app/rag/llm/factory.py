@@ -8,12 +8,14 @@ from app.core.exceptions import AppException
 from app.rag.llm.base import LLMProvider
 from app.rag.llm.fake_provider import FakeLLMProvider
 from app.rag.llm.gemini_provider import GeminiLLMProvider
+from app.rag.llm.ollama_provider import OllamaLLMProvider
 from app.rag.llm.openai_provider import OpenAILLMProvider
 
 _PROVIDERS = {
     "fake": FakeLLMProvider,
     "openai": OpenAILLMProvider,
     "gemini": GeminiLLMProvider,
+    "ollama": OllamaLLMProvider,
 }
 
 

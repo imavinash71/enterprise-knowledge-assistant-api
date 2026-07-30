@@ -16,6 +16,8 @@ pgvector==0.3.6
 
 # --- Utils ---
 python-multipart==0.0.17
+# HTTP client for the Ollama LLM provider.
+requests==2.32.3
 
 # --- Authentication ---
 python-jose[cryptography]==3.3.0

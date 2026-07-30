@@ -38,6 +38,7 @@ class RetrievalService:
         """
         k = top_k or settings.RAG_TOP_K
         query_vector = self._embeddings.embed_query(query)
+
         results = self._chunks.similarity_search(
             query_vector,
             top_k=k,
